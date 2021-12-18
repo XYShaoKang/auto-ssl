@@ -1,0 +1,21 @@
+[
+  {
+    "domains": ["example.com"],
+    "useOSS": true,
+    "oss": {
+      "region": "oss-cn-hangzhou",
+      "accessKeyId": "xxx",
+      "accessKeySecret": "xxx",
+      "bucket": "example"
+    }
+  },
+  {
+    "domains": ["example.com"],
+    "useOSS": false,
+    "local": {
+      "webRoot": "/usr/share/nginx/example/",
+      "fullchainPath": "/etc/ssl/example.com.pem",
+      "privkeyPath": "/etc/ssl/example.com.key"
+    }
+  }
+]
