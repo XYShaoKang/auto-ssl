@@ -9,7 +9,7 @@ const execPromise = util.promisify(exec)
 
 async function restartNginx() {
   try {
-    await execPromise('systemctl restart nginx')
+    await execPromise('systemctl reload nginx')
   } catch (error) {
     log.warn(`重启 nginx 失败,${error}`)
   }
