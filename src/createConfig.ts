@@ -73,10 +73,12 @@ const createConfigs = () => {
       const ACME_PATH = '/.well-known/acme-challenge/'
       const challengRoot = path.join(webRoot, ACME_PATH)
       if (!fs.existsSync(challengRoot)) {
+        log.info('创建 challengRoot')
         fs.mkdirSync(challengRoot, { recursive: true })
       }
 
       challengeCreateFn = async (token: string, keyAuthorization: string) => {
+        log.debug(`challengeCreateFn: ${path.join(challengRoot, token)} ${keyAuthorization}`)
         fs.writeFileSync(path.join(challengRoot, token), keyAuthorization, 'utf-8')
       }
 

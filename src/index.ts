@@ -40,10 +40,12 @@ async function challengeRemoveFn(config: Config, authz: Authorization, challenge
   config.challengeRemoveFn(challenge.token, keyAuthorization)
 }
 
+const DEV = true
+
 async function auto(config: Config) {
   const domain = config.commonName ?? config.domains[0]
 
-  const ACCOUNT_PATH = path.join(__dirname, './account', domain)
+  const ACCOUNT_PATH = path.join(__dirname, '../account', DEV ? 'staging' : 'production', domain)
   if (!fs.existsSync(ACCOUNT_PATH)) {
     fs.mkdirSync(ACCOUNT_PATH, { recursive: true })
   }
@@ -56,29 +58,25 @@ async function auto(config: Config) {
     accountKey = await readFile(accountKeyPath)
     accountUrl = fs.readFileSync(accountUrlPath, 'utf-8')
   } else {
-    log.info('删除旧的账户文件')
+    log.info('清理旧的账户文件')
+    // TODO: 备份老的账户和之前的证书
     fs.rmSync(accountKeyPath, { force: true })
     fs.rmSync(accountUrlPath, { force: true })
     log.info('使用新账户,创建私钥')
     accountKey = await acme.forge.createPrivateKey()
-    fs.writeFileSync(accountKeyPath, accountKey, 'utf-8')
   }
 
   log.info('初始化客户端')
-  const client = new acme.Client({
-    // directoryUrl: acme.directory.letsencrypt.staging,
-    directoryUrl: acme.directory.letsencrypt.production,
-    accountKey,
-    accountUrl,
-  })
+  const directoryUrl = DEV ? acme.directory.letsencrypt.staging : acme.directory.letsencrypt.production
+  const client = new acme.Client({ directoryUrl, accountKey, accountUrl })
 
-  /* Create CSR */
+  log.info('创建签名申请')
   const [key, csr] = await acme.forge.createCsr({
     commonName: domain,
     altNames: config.domains,
   })
 
-  /* Certificate */
+  log.info('使用自动模式申请证书')
   const cert = await client.auto({
     csr,
     termsOfServiceAgreed: true,
@@ -86,10 +84,14 @@ async function auto(config: Config) {
     challengeRemoveFn: challengeRemoveFn.bind(null, config),
   })
 
+  log.info('申请成功')
+
+  log.info('保存账户')
   accountUrl = client.getAccountUrl()
   fs.writeFileSync(accountUrlPath, accountUrl, 'utf-8')
+  fs.writeFileSync(accountKeyPath, accountKey, 'utf-8')
 
-  /* Done */
+  log.info('保存证书')
   log.debug(`CSR:\n${csr.toString()}`)
   log.debug(`Private key:\n${key.toString()}`)
   log.debug(`Certificate:\n${cert.toString()}`)
