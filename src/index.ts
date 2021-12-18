@@ -40,12 +40,12 @@ async function challengeRemoveFn(config: Config, authz: Authorization, challenge
   config.challengeRemoveFn(challenge.token, keyAuthorization)
 }
 
-const DEV = true
+const DEV = !(process.env.NODE_ENV === 'production')
 
 async function auto(config: Config) {
-  const domain = config.commonName ?? config.domains[0]
+  const commonName = config.commonName
 
-  const ACCOUNT_PATH = path.join(__dirname, '../account', DEV ? 'staging' : 'production', domain)
+  const ACCOUNT_PATH = path.join(__dirname, '../account', DEV ? 'staging' : 'production', commonName)
   if (!fs.existsSync(ACCOUNT_PATH)) {
     fs.mkdirSync(ACCOUNT_PATH, { recursive: true })
   }
@@ -71,10 +71,7 @@ async function auto(config: Config) {
   const client = new acme.Client({ directoryUrl, accountKey, accountUrl })
 
   log.info('创建签名申请')
-  const [key, csr] = await acme.forge.createCsr({
-    commonName: domain,
-    altNames: config.domains,
-  })
+  const [key, csr] = await acme.forge.createCsr({ commonName, altNames: config.domains })
 
   log.info('使用自动模式申请证书')
   const cert = await client.auto({

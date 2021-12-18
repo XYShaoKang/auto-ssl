@@ -1,6 +1,7 @@
 [
   {
     "domains": ["example.com"],
+    "commonName": "example.com",
     "useOSS": true,
     "oss": {
       "region": "oss-cn-hangzhou",
@@ -13,7 +14,7 @@
     "domains": ["example.com"],
     "useOSS": false,
     "local": {
-      "webRoot": "/usr/share/nginx/example/",
+      "webRoot": "/usr/share/nginx/example.com/",
       "fullchainPath": "/etc/ssl/example.com.pem",
       "privkeyPath": "/etc/ssl/example.com.key"
     }

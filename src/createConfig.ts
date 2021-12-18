@@ -7,7 +7,7 @@ import { log, restartNginx } from './utils'
 
 export type Config = {
   domains: string[]
-  commonName?: string
+  commonName: string
   challengeCreateFn: (token: string, keyAuthorization: string) => Promise<void>
   challengeRemoveFn: (token: string, keyAuthorization: string) => Promise<void>
   updateCertificate: (serverCertificate: string, privateKey: string) => Promise<void>
@@ -33,6 +33,9 @@ export type Config = {
 
 const createConfigs = () => {
   return configs.map((config: any) => {
+    if (!config.commonName) {
+      config.commonName = config.domains[0]
+    }
     let challengeCreateFn, challengeRemoveFn, updateCertificate
     if (config.useOSS) {
       if (!config.oss) {
