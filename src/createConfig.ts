@@ -44,6 +44,8 @@ const createConfigs = (): Config[] => {
     if (!config.commonName) {
       config.commonName = config.domains[0]
     }
+    const { commonName, domains } = config
+
     let challengeCreateFn, challengeRemoveFn, updateCertificate
     if (config.useOSS) {
       if (!config.oss) {
@@ -51,6 +53,8 @@ const createConfigs = (): Config[] => {
         log.error(msg)
         throw new Error(msg)
       }
+
+      const { accessKeyId, accessKeySecret } = config
       const store = createStore(config.oss)
 
       challengeCreateFn = async (token: string, keyAuthorization: string) => {
@@ -62,10 +66,10 @@ const createConfigs = (): Config[] => {
       }
 
       updateCertificate = async (serverCertificate: string, privateKey: string) => {
-        for (const domain of config.domains) {
+        for (const domain of domains) {
           await setCertificate({
-            accessKeyId: config.oss.accessKeyId,
-            accessKeySecret: config.oss.accessKeySecret,
+            accessKeyId: accessKeyId,
+            accessKeySecret: accessKeySecret,
             domainName: domain,
             serverCertificate,
             privateKey,
@@ -78,9 +82,7 @@ const createConfigs = (): Config[] => {
         log.error(msg)
         throw new Error(msg)
       }
-      const {
-        local: { webRoot, fullchainPath, privkeyPath },
-      } = config
+      const { webRoot, certPath } = config.local
       const ACME_PATH = '/.well-known/acme-challenge/'
       const challengRoot = path.join(webRoot, ACME_PATH)
       if (!fs.existsSync(challengRoot)) {
@@ -98,8 +100,11 @@ const createConfigs = (): Config[] => {
       }
 
       updateCertificate = async (serverCertificate: string, privateKey: string) => {
-        fs.writeFileSync(privkeyPath, privateKey, 'utf-8')
-        fs.writeFileSync(fullchainPath, serverCertificate, 'utf-8')
+        const certificatePath = path.join(certPath, `${commonName}.key`),
+          privateKeyPath = path.join(certPath, `${commonName}.pem`)
+
+        fs.writeFileSync(privateKeyPath, privateKey, 'utf-8')
+        fs.writeFileSync(certificatePath, serverCertificate, 'utf-8')
         await restartNginx()
       }
     }

@@ -15,8 +15,7 @@
     "useOSS": false,
     "local": {
       "webRoot": "/usr/share/nginx/example.com/",
-      "fullchainPath": "/etc/ssl/example.com.pem",
-      "privkeyPath": "/etc/ssl/example.com.key"
+      "certPath": "/etc/ssl/website/"
     }
   }
 ]

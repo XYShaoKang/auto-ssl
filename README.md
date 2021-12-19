@@ -75,8 +75,7 @@ pnpm install && pnpm build
 将 useOSS 设置为 false,另外在 `local` 字段下添加以下数据:
 
 - webRoot: 网站的根目录
-- fullchainPath: 证书存放的路径
-- privkeyPath: 私钥存放的路径
+- certPath: 证书存放的路径,会将申请证书的密钥(例: `example.com.key`)以及申请到的证书(例: `example.com.pem`)存放到这个路径下
 
 ```json
 [
@@ -86,14 +85,13 @@ pnpm install && pnpm build
     "useOSS": false,
     "local": {
       "webRoot": "/usr/share/nginx/example.com/",
-      "fullchainPath": "/etc/ssl/example.com.pem",
-      "privkeyPath": "/etc/ssl/example.com.key"
+      "certPath": "/etc/ssl/website/"
     }
   }
 ]
 ```
 
-- 查看完整的例子 [config.example.json](./src/config.example.json)
+- 查看完整的例子 [config.example.json](./config.example.json)
 
 ### 运行
 
