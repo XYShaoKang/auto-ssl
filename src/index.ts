@@ -103,14 +103,14 @@ async function auto(config: Config) {
 void (async function () {
   for (const config of createConfigs()) {
     try {
-      log.info(`start ${config.commonName}`)
+      log.info(`\n========== start ${config.commonName} ==========`)
       await auto(config)
-      log.info(`end ${config.commonName}`)
+      log.info(`========== end ${config.commonName} ==========`)
     } catch (error) {
       if (error instanceof Error) {
-        log.error(`申请 ${config.commonName} 出现错误: ${error.message}`)
+        log.error(`申请 ${config.commonName} 证书出现错误: ${error.message}`)
       } else {
-        log.error(`申请 ${config.commonName} 出现错误: ${error}`)
+        log.error(`申请 ${config.commonName} 证书出现错误: ${error}`)
       }
     }
   }
