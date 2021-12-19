@@ -54,7 +54,7 @@ const createConfigs = (): Config[] => {
         throw new Error(msg)
       }
 
-      const { accessKeyId, accessKeySecret } = config
+      const { accessKeyId, accessKeySecret } = config.oss
       const store = createStore(config.oss)
 
       challengeCreateFn = async (token: string, keyAuthorization: string) => {
@@ -100,8 +100,12 @@ const createConfigs = (): Config[] => {
       }
 
       updateCertificate = async (serverCertificate: string, privateKey: string) => {
-        const certificatePath = path.join(certPath, `${commonName}.key`),
-          privateKeyPath = path.join(certPath, `${commonName}.pem`)
+        const privateKeyPath = path.join(certPath, `${commonName}.key`),
+          certificatePath = path.join(certPath, `${commonName}.pem`)
+
+        if (!fs.existsSync(certPath)) {
+          fs.mkdirSync(certPath, { recursive: true })
+        }
 
         fs.writeFileSync(privateKeyPath, privateKey, 'utf-8')
         fs.writeFileSync(certificatePath, serverCertificate, 'utf-8')
