@@ -102,8 +102,16 @@ async function auto(config: Config) {
 
 void (async function () {
   for (const config of createConfigs()) {
-    log.info(`start ${config.domains[0]}`)
-    await auto(config)
-    log.info(`end ${config.domains[0]}`)
+    try {
+      log.info(`start ${config.commonName}`)
+      await auto(config)
+      log.info(`end ${config.commonName}`)
+    } catch (error) {
+      if (error instanceof Error) {
+        log.error(`申请 ${config.commonName} 出现错误: ${error.message}`)
+      } else {
+        log.error(`申请 ${config.commonName} 出现错误: ${error}`)
+      }
+    }
   }
 })()

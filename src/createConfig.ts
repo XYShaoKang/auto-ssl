@@ -32,7 +32,7 @@ export type Config = {
     }
 )
 
-const createConfigs = () => {
+const createConfigs = (): Config[] => {
   if (!fs.existsSync(CONFIG_PATH)) {
     const msg = '找不到配置'
     log.error(msg)
