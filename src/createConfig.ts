@@ -1,9 +1,10 @@
 import fs from 'fs'
 import path from 'path'
 import { setCertificate } from './cdn'
-import configs from './config.json'
 import { createStore, deleteFile, put } from './oss'
 import { log, restartNginx } from './utils'
+
+const CONFIG_PATH = path.join(__dirname, '../config.json')
 
 export type Config = {
   domains: string[]
@@ -32,6 +33,13 @@ export type Config = {
 )
 
 const createConfigs = () => {
+  if (!fs.existsSync(CONFIG_PATH)) {
+    const msg = '找不到配置'
+    log.error(msg)
+    throw new Error(msg)
+  }
+
+  const configs = JSON.parse(fs.readFileSync(CONFIG_PATH, 'utf-8'))
   return configs.map((config: any) => {
     if (!config.commonName) {
       config.commonName = config.domains[0]

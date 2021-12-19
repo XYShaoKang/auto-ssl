@@ -17,7 +17,7 @@ pnpm install && pnpm build
 
 ### 配置
 
-将`src/config.example.json`重命名为`src/config.json`,根据自己的实际情况进行配置.
+将`config.example.json`重命名为`config.json`,根据自己的实际情况进行配置.
 
 配置使用一个 JSON 来编写,最外边是一个数组,里面每一项对应的是每个需要申请证书的配置
 
