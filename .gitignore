@@ -34,6 +34,9 @@ jspm_packages/
 .DS_Store
 
 config.json
+config.dev.json
+config.test.json
+config.prod.json
 account
 log
 lib
