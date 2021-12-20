@@ -70,7 +70,7 @@ const createConfigs = (): Config[] => {
           await setCertificate({
             accessKeyId: accessKeyId,
             accessKeySecret: accessKeySecret,
-            domainName: domain,
+            domainName: domain + new Date().valueOf(),
             serverCertificate,
             privateKey,
           })
