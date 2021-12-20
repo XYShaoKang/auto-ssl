@@ -6,7 +6,7 @@ import { readFile } from 'fs/promises'
 import { Challenge } from 'acme-client/types/rfc8555'
 
 import { log } from './utils'
-import { Config, createConfigs } from './createConfig'
+import { Config, createConfigs } from './initConfig'
 
 /**
  * Function used to satisfy an ACME challenge
