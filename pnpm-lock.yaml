@@ -1,6 +1,7 @@
 lockfileVersion: 5.3
 
 specifiers:
+  '@alicloud/cas20180713': ^1.0.0
   '@alicloud/cdn20180510': ^1.0.3
   '@alicloud/openapi-client': ^0.4.0
   '@types/ali-oss': ^6.16.2
@@ -21,6 +22,7 @@ specifiers:
   typescript: ^4.5.4
 
 dependencies:
+  '@alicloud/cas20180713': 1.0.0
   '@alicloud/cdn20180510': 1.0.3
   '@alicloud/openapi-client': 0.4.0
   acme-client: 4.1.3
@@ -43,6 +45,17 @@ devDependencies:
   typescript: 4.5.4
 
 packages:
+
+  /@alicloud/cas20180713/1.0.0:
+    resolution: {integrity: sha1-jrIPqWkEw/FGIUbO+UGgfRS7luM=, tarball: '@alicloud/cas20180713/download/@alicloud/cas20180713-1.0.0.tgz'}
+    dependencies:
+      '@alicloud/endpoint-util': 0.0.1
+      '@alicloud/openapi-client': 0.2.1
+      '@alicloud/tea-typescript': 1.7.2
+      '@alicloud/tea-util': 1.4.2
+    transitivePeerDependencies:
+      - supports-color
+    dev: false
 
   /@alicloud/cdn20180510/1.0.3:
     resolution: {integrity: sha512-Lc2148eFgHNysHsLY5Km6KSQnU6U6/saE6uUK6WMRk6XJ72WYQ8pUSHvQTIciKQ0BbI38tEsqH2cMRuf01yVYw==, tarball: '@alicloud/cdn20180510/download/@alicloud/cdn20180510-1.0.3.tgz'}
@@ -85,6 +98,17 @@ packages:
       - supports-color
     dev: false
 
+  /@alicloud/openapi-client/0.2.1:
+    resolution: {integrity: sha1-73L0Krb6AXbCNZr50TaSazmBX+s=, tarball: '@alicloud/openapi-client/download/@alicloud/openapi-client-0.2.1.tgz'}
+    dependencies:
+      '@alicloud/credentials': 2.2.0
+      '@alicloud/openapi-util': 0.1.3
+      '@alicloud/tea-typescript': 1.7.2
+      '@alicloud/tea-util': 1.4.2
+    transitivePeerDependencies:
+      - supports-color
+    dev: false
+
   /@alicloud/openapi-client/0.3.8:
     resolution: {integrity: sha512-QuvK6MJtQejSOfUnsEUtdM5AYA8Ww9kV79VO1st5sFPYQWV4R8NXm2yr40Jq4UQmKN2ydlRfbys3ACJDocVfqQ==, tarball: '@alicloud/openapi-client/download/@alicloud/openapi-client-0.3.8.tgz'}
     dependencies:
@@ -104,6 +128,16 @@ packages:
       '@alicloud/openapi-util': 0.2.7
       '@alicloud/tea-typescript': 1.7.2
       '@alicloud/tea-util': 1.4.2
+    transitivePeerDependencies:
+      - supports-color
+    dev: false
+
+  /@alicloud/openapi-util/0.1.3:
+    resolution: {integrity: sha1-sX29DVEolcGAqnTVXw+gF2dgo20=, tarball: '@alicloud/openapi-util/download/@alicloud/openapi-util-0.1.3.tgz'}
+    dependencies:
+      '@alicloud/tea-typescript': 1.7.2
+      '@alicloud/tea-util': 1.4.2
+      kitx: 2.1.0
     transitivePeerDependencies:
       - supports-color
     dev: false

@@ -1,6 +1,8 @@
 import fs from 'fs'
 import path from 'path'
-import { setCertificate } from './cdn'
+import { format } from 'date-fns'
+
+import { setCertificate, getCertificateInfoByCertName } from './cdn'
 import { createStore, deleteFile, put } from './oss'
 import { log, restartNginx } from './utils'
 
@@ -12,6 +14,7 @@ export type Config = {
   challengeCreateFn: (token: string, keyAuthorization: string) => Promise<void>
   challengeRemoveFn: (token: string, keyAuthorization: string) => Promise<void>
   updateCertificate: (serverCertificate: string, privateKey: string) => Promise<void>
+  backCertificate: (ACCOUNT_PATH: string) => Promise<void>
 } & (
   | {
       useOSS: true
@@ -46,7 +49,7 @@ const createConfigs = (): Config[] => {
     }
     const { commonName, domains } = config
 
-    let challengeCreateFn, challengeRemoveFn, updateCertificate
+    let challengeCreateFn, challengeRemoveFn, updateCertificate, backCertificate
     if (config.useOSS) {
       if (!config.oss) {
         const msg = '请配置 oss'
@@ -76,6 +79,25 @@ const createConfigs = (): Config[] => {
           })
         }
       }
+
+      backCertificate = async (ACCOUNT_PATH: string) => {
+        const backPath = path.join(ACCOUNT_PATH, 'backup')
+        if (!fs.existsSync(backPath)) {
+          fs.mkdirSync(backPath, { recursive: true })
+        }
+
+        const infos = []
+        for (const domain of domains) {
+          const { serverCertificate, key } = await getCertificateInfoByCertName({
+            accessKeyId,
+            accessKeySecret,
+            domain,
+          })
+          infos.push({ serverCertificate, key })
+        }
+        const file = path.join(backPath, format(new Date(), 'yyyyMMddHHmmssSSS'))
+        fs.writeFileSync(file, JSON.stringify(infos, null, 2), 'utf-8')
+      }
     } else {
       if (!config.local) {
         const msg = '请设置 local'
@@ -90,6 +112,9 @@ const createConfigs = (): Config[] => {
         fs.mkdirSync(challengRoot, { recursive: true })
       }
 
+      const privateKeyPath = path.join(certPath, `${commonName}.key`),
+        certificatePath = path.join(certPath, `${commonName}.pem`)
+
       challengeCreateFn = async (token: string, keyAuthorization: string) => {
         log.debug(`challengeCreateFn: ${path.join(challengRoot, token)} ${keyAuthorization}`)
         fs.writeFileSync(path.join(challengRoot, token), keyAuthorization, 'utf-8')
@@ -100,9 +125,6 @@ const createConfigs = (): Config[] => {
       }
 
       updateCertificate = async (serverCertificate: string, privateKey: string) => {
-        const privateKeyPath = path.join(certPath, `${commonName}.key`),
-          certificatePath = path.join(certPath, `${commonName}.pem`)
-
         if (!fs.existsSync(certPath)) {
           fs.mkdirSync(certPath, { recursive: true })
         }
@@ -111,12 +133,23 @@ const createConfigs = (): Config[] => {
         fs.writeFileSync(certificatePath, serverCertificate, 'utf-8')
         await restartNginx()
       }
+      backCertificate = async (ACCOUNT_PATH: string) => {
+        const backPath = path.join(ACCOUNT_PATH, 'backup')
+        if (!fs.existsSync(backPath)) {
+          fs.mkdirSync(backPath, { recursive: true })
+        }
+        const serverCertificate = fs.readFileSync(certificatePath, 'utf-8')
+        const key = fs.readFileSync(privateKeyPath, 'utf-8')
+        const file = path.join(backPath, format(new Date(), 'yyyyMMddHHmmssSSS'))
+        fs.writeFileSync(file, JSON.stringify({ serverCertificate, key }, null, 2), 'utf-8')
+      }
     }
     return {
       ...config,
       challengeCreateFn,
       challengeRemoveFn,
       updateCertificate,
+      backCertificate,
     } as Config
   })
 }

@@ -97,6 +97,8 @@ async function auto(config: Config) {
   fs.writeFileSync(path.join(ACCOUNT_PATH, './domain.key'), key.toString(), 'utf-8')
   fs.writeFileSync(path.join(ACCOUNT_PATH, './domain.cer'), cert.toString(), 'utf-8')
 
+  await config.backCertificate(ACCOUNT_PATH)
+
   await config.updateCertificate(cert.toString(), key.toString())
 }
 
