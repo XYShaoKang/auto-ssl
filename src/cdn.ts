@@ -12,6 +12,18 @@ function createClient(accessKeyId: string, accessKeySecret: string) {
   return new Cdn20180510(config)
 }
 
+const getCdnClient = (() => {
+  const cache = new Map<string, Cdn20180510>()
+  return (accessKeyId: string, accessKeySecret: string) => {
+    let client = cache.get(accessKeyId)
+    if (!client) {
+      client = createClient(accessKeyId, accessKeySecret)
+      cache.set(accessKeyId, client)
+    }
+    return client
+  }
+})()
+
 type Option = {
   accessKeyId: string
   accessKeySecret: string
@@ -21,7 +33,7 @@ type Option = {
 }
 
 async function setCertificate({ accessKeyId, accessKeySecret, domainName, serverCertificate, privateKey }: Option) {
-  const client = createClient(accessKeyId, accessKeySecret)
+  const client = getCdnClient(accessKeyId, accessKeySecret)
   const request = new $Cdn20180510.SetDomainServerCertificateRequest({})
   request.domainName = domainName
   request.serverCertificateStatus = 'on'
