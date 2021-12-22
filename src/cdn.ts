@@ -31,13 +31,22 @@ type Option = {
   domainName: string
   serverCertificate: string
   privateKey: string
+  certName: string
 }
 
 // https://next.api.aliyun.com/document/Cdn/2018-05-10/SetDomainServerCertificate
-async function setCertificate({ accessKeyId, accessKeySecret, domainName, serverCertificate, privateKey }: Option) {
+async function setCertificate({
+  accessKeyId,
+  accessKeySecret,
+  domainName,
+  serverCertificate,
+  privateKey,
+  certName,
+}: Option) {
   const client = getCdnClient(accessKeyId, accessKeySecret)
   const request = new $Cdn20180510.SetDomainServerCertificateRequest({
     domainName,
+    certName,
     serverCertificateStatus: 'on',
     certType: 'upload',
     serverCertificate,
