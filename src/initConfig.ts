@@ -4,7 +4,7 @@ import { format } from 'date-fns'
 
 import { setCertificate, getCertificateInfoByCertName } from './cdn'
 import { createStore, deleteFile, put } from './oss'
-import { log, restartNginx } from './utils'
+import { log, restartNginx, checkCertificate } from './utils'
 
 const CONFIG_PATH = path.join(__dirname, '../config.json')
 
@@ -78,6 +78,13 @@ const createConfigs = (): Config[] => {
             privateKey,
             certName: 'autossl-' + domain + '-' + format(new Date(), 'yyyyMMdd-HHmmssSSS'),
           })
+
+          // 验证证书是否设置成功
+          if (await checkCertificate(domain, serverCertificate.split('\n\n')[0])) {
+            log.info(`${domain} 已成功更新证书`)
+          } else {
+            log.warn(`${domain} 未检测到新安装的证书,请手动检查`)
+          }
         }
       }
 
@@ -133,6 +140,13 @@ const createConfigs = (): Config[] => {
         fs.writeFileSync(privateKeyPath, privateKey, 'utf-8')
         fs.writeFileSync(certificatePath, serverCertificate, 'utf-8')
         await restartNginx()
+
+        // 验证证书是否设置成功
+        if (await checkCertificate(commonName, serverCertificate.split('\n\n')[0])) {
+          log.info(`${commonName} 已成功更新证书`)
+        } else {
+          log.warn(`${commonName} 未检测到新安装的证书,请手动检查`)
+        }
       }
       backupCertificate = async (ACCOUNT_PATH: string) => {
         const backPath = path.join(ACCOUNT_PATH, 'backup')
