@@ -76,7 +76,7 @@ const createConfigs = (): Config[] => {
             domainName: domain,
             serverCertificate,
             privateKey,
-            certName: domain + new Date().valueOf(),
+            certName: 'autossl-' + domain + '-' + format(new Date(), 'yyyyMMdd-HHmmssSSS'),
           })
         }
       }
