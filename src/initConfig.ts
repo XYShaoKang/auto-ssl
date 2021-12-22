@@ -14,7 +14,7 @@ export type Config = {
   challengeCreateFn: (token: string, keyAuthorization: string) => Promise<void>
   challengeRemoveFn: (token: string, keyAuthorization: string) => Promise<void>
   updateCertificate: (serverCertificate: string, privateKey: string) => Promise<void>
-  backCertificate: (ACCOUNT_PATH: string) => Promise<void>
+  backupCertificate: (ACCOUNT_PATH: string) => Promise<void>
 } & (
   | {
       useOSS: true
@@ -49,7 +49,7 @@ const createConfigs = (): Config[] => {
     }
     const { commonName, domains } = config
 
-    let challengeCreateFn, challengeRemoveFn, updateCertificate, backCertificate
+    let challengeCreateFn, challengeRemoveFn, updateCertificate, backupCertificate
     if (config.useOSS) {
       if (!config.oss) {
         const msg = '请配置 oss'
@@ -80,7 +80,7 @@ const createConfigs = (): Config[] => {
         }
       }
 
-      backCertificate = async (ACCOUNT_PATH: string) => {
+      backupCertificate = async (ACCOUNT_PATH: string) => {
         const backPath = path.join(ACCOUNT_PATH, 'backup')
         if (!fs.existsSync(backPath)) {
           fs.mkdirSync(backPath, { recursive: true })
@@ -133,7 +133,7 @@ const createConfigs = (): Config[] => {
         fs.writeFileSync(certificatePath, serverCertificate, 'utf-8')
         await restartNginx()
       }
-      backCertificate = async (ACCOUNT_PATH: string) => {
+      backupCertificate = async (ACCOUNT_PATH: string) => {
         const backPath = path.join(ACCOUNT_PATH, 'backup')
         if (!fs.existsSync(backPath)) {
           fs.mkdirSync(backPath, { recursive: true })
@@ -149,7 +149,7 @@ const createConfigs = (): Config[] => {
       challengeCreateFn,
       challengeRemoveFn,
       updateCertificate,
-      backCertificate,
+      backupCertificate,
     } as Config
   })
 }
