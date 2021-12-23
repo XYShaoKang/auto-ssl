@@ -1,0 +1,77 @@
+{
+  "$schema": "https://json-schema.org/draft-07/schema",
+  "title": "auto ssl cofnig",
+  "description": "域名自动更新配置",
+  "type": "array",
+  "items": {
+    "type": "object",
+    "properties": {
+      "domains": {
+        "description": "域名列表",
+        "type": "array",
+        "items": {
+          "type": "string"
+        },
+        "minItems": 1
+      },
+      "commonName": {
+        "description": "域名的公共名称",
+        "type": "string"
+      },
+      "expireTimeThreshold": {
+        "description": "证书过期时间阈值(单位: 天),默认为 15 天,只对剩余过期时间小于阈值的域名进行更新",
+        "type": "number"
+      },
+      "server": {
+        "description": "服务配置",
+        "type": "object",
+        "oneOf": [{ "$ref": "#/$defs/oss" }, { "$ref": "#/$defs/local" }]
+      }
+    },
+    "required": ["domains", "server"]
+  },
+  "$defs": {
+    "oss": {
+      "properties": {
+        "useOSS": {
+          "description": "使用 OSS 服务",
+          "enum": [true]
+        },
+        "region": {
+          "markdownDescription": "Bucket 所在地域,比如杭州的值为`oss-cn-hangzhou`,更多详情请查阅文档 [访问域名和数据中心](https://help.aliyun.com/document_detail/31837.htm)",
+          "type": "string"
+        },
+        "accessKeyId": {
+          "description": "有操作当前 Bucket 权限的 AccessKey ID",
+          "type": "string"
+        },
+        "accessKeySecret": {
+          "description": "有操作当前 Bucket 权限的 AccessKey Secret",
+          "type": "string"
+        },
+        "bucket": {
+          "description": "Bucket 的名称",
+          "type": "string"
+        }
+      },
+      "required": ["useOSS", "region", "accessKeyId", "accessKeySecret", "bucket"]
+    },
+    "local": {
+      "properties": {
+        "useOSS": {
+          "description": "使用本地服务",
+          "enum": [false]
+        },
+        "webRoot": {
+          "description": "web 根目录",
+          "type": "string"
+        },
+        "certPath": {
+          "description": "证书存放的目录",
+          "type": "string"
+        }
+      },
+      "required": ["useOSS", "webRoot", "certPath"]
+    }
+  }
+}

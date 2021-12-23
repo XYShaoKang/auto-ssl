@@ -24,7 +24,7 @@ pnpm install && pnpm build
 - domains: 字符串,为必填项,需要申请证书的域名列表
 - commonName: 字符串,可选项,如果没有,则会取 `domains[0]` 作为 commonName
 - expireTimeThreshold: 数字,可选项,过期时间阈值(单位: 天),默认为 15,只对剩余过期时间小于阈值的域名进行更新
-- useOSS: 布尔值,必填,使用 OSS 和本地的需要的参数不同,所以通过这个值来确定当前域名使用哪种方式来验证,以及如果设置证书.
+- server: 服务配置,可以分为本地服务(NGINC),线上服务(OSS),查看后面详细说明
 
 ```json
 [
@@ -32,7 +32,7 @@ pnpm install && pnpm build
     "domains": ["example.com"],
     "commonName": "example.com",
     "expireTimeThreshold": 15,
-    "useOSS": true
+    "server": {}
   }
 ]
 ```
@@ -53,6 +53,7 @@ accessKeyId 需要权限:
 
 将 useOSS 设置为 true,另外在 `oss` 字段下添加以下数据:
 
+- useOSS: true,必填,表示使用 OSS 服务
 - region: 字符串,Bucket 所在地域,比如杭州的值为`oss-cn-hangzhou`,[访问域名和数据中心](https://help.aliyun.com/document_detail/31837.htm)
 - accessKeyId: 字符串,有权限的 accessKeyId 和 accessKeySecret
 - accessKeySecret: 字符串
@@ -63,8 +64,8 @@ accessKeyId 需要权限:
   {
     "domains": ["example.com"],
     "commonName": "example.com",
-    "useOSS": true,
-    "oss": {
+    "server": {
+      "useOSS": true,
       "region": "oss-cn-hangzhou",
       "accessKeyId": "xxx",
       "accessKeySecret": "xxx",
@@ -84,6 +85,7 @@ accessKeyId 需要权限:
 
 将 useOSS 设置为 false,另外在 `local` 字段下添加以下数据:
 
+- useOSS: false,必填,表示使用 NGINX
 - webRoot: 网站的根目录
 - certPath: 证书存放的路径,会将申请证书的密钥(例: `example.com.key`)以及申请到的证书(例: `example.com.pem`)存放到这个路径下
 
@@ -92,8 +94,8 @@ accessKeyId 需要权限:
   {
     "domains": ["example.com"],
     "commonName": "example.com",
-    "useOSS": false,
-    "local": {
+    "server": {
+      "useOSS": false,
       "webRoot": "/usr/share/nginx/example.com/",
       "certPath": "/etc/ssl/website/"
     }

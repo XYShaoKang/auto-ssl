@@ -2,8 +2,8 @@
   {
     "domains": ["example.com"],
     "commonName": "example.com",
-    "useOSS": true,
-    "oss": {
+    "server": {
+      "useOSS": true,
       "region": "oss-cn-hangzhou",
       "accessKeyId": "xxx",
       "accessKeySecret": "xxx",
@@ -12,8 +12,8 @@
   },
   {
     "domains": ["example.com"],
-    "useOSS": false,
-    "local": {
+    "server": {
+      "useOSS": false,
       "webRoot": "/usr/share/nginx/example.com/",
       "certPath": "/etc/ssl/website/"
     }

@@ -20,8 +20,8 @@ export type Config = {
   backupCertificate: (ACCOUNT_PATH: string) => Promise<void>
 } & (
   | {
-      useOSS: true
-      oss: {
+      server: {
+        useOSS: true
         region: string
         accessKeyId: string
         accessKeySecret: string
@@ -29,8 +29,8 @@ export type Config = {
       }
     }
   | {
-      useOSS: false
-      local: {
+      server: {
+        useOSS: false
         webRoot: string
         certPath: string
       }
@@ -55,15 +55,15 @@ const createConfigs = (): Config[] => {
     const { commonName, domains } = config
 
     let challengeCreateFn, challengeRemoveFn, updateCertificate, backupCertificate
-    if (config.useOSS) {
-      if (!config.oss) {
+    if (config.server.useOSS) {
+      const { region, accessKeyId, accessKeySecret, bucket } = config.server
+      if (!region || !accessKeyId || !accessKeySecret || !bucket) {
         const msg = '请配置 oss'
         log.error(msg)
         throw new Error(msg)
       }
 
-      const { accessKeyId, accessKeySecret } = config.oss
-      const store = createStore(config.oss)
+      const store = createStore({ region, accessKeyId, accessKeySecret, bucket })
 
       challengeCreateFn = async (token: string, keyAuthorization: string) => {
         await put(store, `.well-known/acme-challenge/${token}`, Buffer.from(keyAuthorization))
@@ -112,12 +112,13 @@ const createConfigs = (): Config[] => {
         fs.writeFileSync(file, JSON.stringify(infos, null, 2), 'utf-8')
       }
     } else {
-      if (!config.local) {
+      const { webRoot, certPath } = config.server
+      if (!webRoot || !certPath) {
         const msg = '请设置 local'
         log.error(msg)
         throw new Error(msg)
       }
-      const { webRoot, certPath } = config.local
+
       const ACME_PATH = '/.well-known/acme-challenge/'
       const challengRoot = path.join(webRoot, ACME_PATH)
       if (!fs.existsSync(challengRoot)) {
