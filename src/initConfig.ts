@@ -32,8 +32,7 @@ export type Config = {
       useOSS: false
       local: {
         webRoot: string
-        fullchainPath: string
-        privkeyPath: string
+        certPath: string
       }
     }
 )
