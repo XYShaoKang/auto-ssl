@@ -5,7 +5,7 @@ import { readFile } from 'fs/promises'
 // eslint-disable-next-line import/no-unresolved
 import { Challenge } from 'acme-client/types/rfc8555'
 
-import { log } from './utils'
+import { getCertificate, log } from './utils'
 import { Config, createConfigs } from './initConfig'
 
 /**
@@ -105,9 +105,15 @@ async function auto(config: Config) {
 void (async function () {
   for (const config of createConfigs()) {
     try {
-      log.info(`\n========== start ${config.commonName} ==========`)
+      log.info(`========== start ${config.commonName} ==========`)
+      const { expireTime } = await getCertificate(config.commonName)
+
+      const maxTime = config.expireTimeThreshold * 24 * 60 * 60 * 1000
+      if (expireTime.valueOf() - new Date().valueOf() > maxTime) continue
+
       await auto(config)
-      log.info(`========== end ${config.commonName} ==========`)
+
+      log.info(`========== end ${config.commonName} ==========\n`)
     } catch (error) {
       if (error instanceof Error) {
         log.error(`申请 ${config.commonName} 证书出现错误: ${error.message}`)

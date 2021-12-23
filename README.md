@@ -23,6 +23,7 @@ pnpm install && pnpm build
 
 - domains: 字符串,为必填项,需要申请证书的域名列表
 - commonName: 字符串,可选项,如果没有,则会取 `domains[0]` 作为 commonName
+- expireTimeThreshold: 数字,可选项,过期时间阈值(单位: 天),默认为 15,只对剩余过期时间小于阈值的域名进行更新
 - useOSS: 布尔值,必填,使用 OSS 和本地的需要的参数不同,所以通过这个值来确定当前域名使用哪种方式来验证,以及如果设置证书.
 
 ```json
@@ -30,6 +31,7 @@ pnpm install && pnpm build
   {
     "domains": ["example.com"],
     "commonName": "example.com",
+    "expireTimeThreshold": 15,
     "useOSS": true
   }
 ]
@@ -40,8 +42,14 @@ pnpm install && pnpm build
 先决条件: 在 CDN 中添加域名,并将域名指向 Bucket.
 
 > 使用 CDN 并不是申请证书必须的,Bucket 自身可以绑定域名并添加 SSL 证书,只是没有对应的 API 接口能操作,所以申请好证书之后,需要手动添加证书,如果要实现自动化,则可以通过在 CDN 中添加域名,再指向 Bucket,这样就可以通过 CDN 的 API 为域名设置证书了,将整个过程自动化
-> 
+>
 > 第一次,需要手动到 CDN 中开启 HTTPS 设置,之后就可以全自动续签和更新了
+
+accessKeyId 需要权限:
+
+- AliyunOSSFullAccess
+- AliyunCDNFullAccess
+- [ ] AliyunYundunCertReadOnlyAccess 用于证书的备份还原时获取 key
 
 将 useOSS 设置为 true,另外在 `oss` 字段下添加以下数据:
 

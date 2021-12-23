@@ -7,10 +7,13 @@ import { createStore, deleteFile, put } from './oss'
 import { log, restartNginx, checkCertificate } from './utils'
 
 const CONFIG_PATH = path.join(__dirname, '../config.json')
+// 默认的过期时间阈值为 15 天,当过期时间小于 15 天时执行更新操作
+const DEFAULT_EXPIRE_TIME_THRESHOLD = 15
 
 export type Config = {
   domains: string[]
   commonName: string
+  expireTimeThreshold: number
   challengeCreateFn: (token: string, keyAuthorization: string) => Promise<void>
   challengeRemoveFn: (token: string, keyAuthorization: string) => Promise<void>
   updateCertificate: (serverCertificate: string, privateKey: string) => Promise<void>
@@ -46,6 +49,9 @@ const createConfigs = (): Config[] => {
   return configs.map((config: any) => {
     if (!config.commonName) {
       config.commonName = config.domains[0]
+    }
+    if (!config.expireTimeThreshold) {
+      config.expireTimeThreshold = DEFAULT_EXPIRE_TIME_THRESHOLD
     }
     const { commonName, domains } = config
 
