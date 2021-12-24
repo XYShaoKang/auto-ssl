@@ -50,7 +50,7 @@ ${cert.raw
         resolve(result)
       }
     })
-    // socket.once('close', () => resolve(result))
+
     socket.once('error', reject)
     socket.once('timeout', () => {
       socket.destroy(new Error(`Timeout after ${TIMEOUT} ms for ${domain}:${443}`))
@@ -72,8 +72,8 @@ async function sleep(time: number) {
  */
 async function checkCertificate(domain: string, certificate: string) {
   let flag = false
-  for (let i = 0; i < 3; i++) {
-    await sleep(500 * (i + 1))
+  for (let i = 0; i < 5; i++) {
+    await sleep(2000)
     const info = await getCertificate(domain)
     if (info.certificate === certificate) {
       flag = true
