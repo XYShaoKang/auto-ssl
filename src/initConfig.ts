@@ -161,7 +161,7 @@ const createConfigs = (): Config[] => {
         }
         const serverCertificate = fs.readFileSync(certificatePath, 'utf-8')
         const key = fs.readFileSync(privateKeyPath, 'utf-8')
-        const file = path.join(backPath, format(new Date(), 'yyyyMMddHHmmssSSS'))
+        const file = path.join(backPath, format(new Date(), 'yyyyMMddHHmmssSSS') + '.json')
         fs.writeFileSync(file, JSON.stringify({ serverCertificate, key }, null, 2), 'utf-8')
       }
     }
